@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsSender.Common.RabbitMQ", "SmsSender.Common\SmsSender.Common.RabbitMQ.csproj", "{6176BE9D-3C66-4E0D-B2FF-DB3F7538731A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmsSender.Common.RabbitMQ", "SmsSender.Common\SmsSender.Common.RabbitMQ.csproj", "{6176BE9D-3C66-4E0D-B2FF-DB3F7538731A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97E54B54-C1C2-417A-B0BB-787B04034D57}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
