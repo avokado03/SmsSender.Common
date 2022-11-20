@@ -12,5 +12,7 @@ public static class RedisConfiguration
     {
         services.Configure<RedisOptions>(opt =>
             configuration.GetSection(nameof(RedisOptions)).Bind(opt));
+
+        services.AddSingleton<IRedisRateLimiter, RedisRateLimiter>();
     }
 }

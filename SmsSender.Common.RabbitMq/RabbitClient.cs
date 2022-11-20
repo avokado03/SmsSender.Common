@@ -13,10 +13,10 @@ namespace SmsSender.Common.RabbitMQ;
 /// </summary>
 public class RabbitClient : IRabbitClient
 {
-    private readonly RabbitConnection _connection;
+    private readonly IRabbitConnection _connection;
     private readonly RabbitQueueOptions _queueOptions;
 
-    public RabbitClient(IOptions<RabbitQueueOptions> queueOptions, RabbitConnection connection)
+    public RabbitClient(IOptions<RabbitQueueOptions> queueOptions, IRabbitConnection connection)
     {       
         _queueOptions = queueOptions.Value 
             ?? throw new ArgumentNullException(nameof(RabbitQueueOptions));

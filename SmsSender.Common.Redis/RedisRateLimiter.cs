@@ -6,7 +6,7 @@ namespace SmsSender.Common.Redis
     /// <summary>
     /// Сервис RateLimiter (реализация с ограничением по времени)
     /// </summary>
-    public class RedisRateLimiter
+    public class RedisRateLimiter : IRedisRateLimiter
     {
         private ConnectionMultiplexer _connection;
         private IDatabase _db;
@@ -18,13 +18,7 @@ namespace SmsSender.Common.Redis
 
         }
 
-        /// <summary>
-        /// Метод проверки на превышение лимита операций на промежуток времени
-        /// </summary>
-        /// <param name="key">Хэш-ключ Redis-значения лимита</param>
-        /// <param name="allowCountPerTime">На сколько нужно ограничить значение переменной</param>
-        /// <param name="lifetime">На протяжении какого времени эта переменная живет</param>
-        /// <returns>Результат проверки</returns>
+        /// <inheritdoc />
         public bool CheckLimit(string key, int allowCountPerTime, TimeSpan lifetime)
         {
             if (_db.StringGet(key) == RedisValue.Null)
