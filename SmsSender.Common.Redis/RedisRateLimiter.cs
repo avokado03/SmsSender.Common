@@ -15,7 +15,6 @@ namespace SmsSender.Common.Redis
         {
             _connection = ConnectionMultiplexer.Connect(options.Value.Connection);
             _db = _connection.GetDatabase();
-
         }
 
         /// <inheritdoc />

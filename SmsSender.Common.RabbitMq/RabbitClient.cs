@@ -15,29 +15,18 @@ public class RabbitClient : IRabbitClient
 {
     private readonly IRabbitConnection _connection;
     private readonly RabbitQueueOptions _queueOptions;
+    public IModel Channel { get; private set; }
 
     public RabbitClient(IOptions<RabbitQueueOptions> queueOptions, IRabbitConnection connection)
     {       
         _queueOptions = queueOptions.Value 
             ?? throw new ArgumentNullException(nameof(RabbitQueueOptions));
         _connection = connection;
-    }
-
-    private void Publish (string message, RabbitQueueOption queueOptions)
-    {
         if (!_connection.IsConnected)
         {
             _connection.TryConnect();
+            Channel = _connection.CreateChannel();
         }
-        using var channel = _connection.CreateChannel();
-        DeclareQueue(channel, queueOptions);
-
-        var body = Encoding.UTF8.GetBytes(message);
-
-        channel.BasicPublish(exchange: string.Empty, 
-            routingKey: queueOptions.Name,
-            basicProperties: null,
-            body: body);
     }
 
     public void Publish(string message, string queueName)
@@ -53,19 +42,22 @@ public class RabbitClient : IRabbitClient
         Publish(message, queueName);
     }
 
-    private void Subscribe(EventHandler<BasicDeliverEventArgs> received, RabbitQueueOption queueOption)
+    private void Publish(string message, RabbitQueueOption queueOptions)
     {
         if (!_connection.IsConnected)
         {
             _connection.TryConnect();
+            Channel = _connection.CreateChannel();
         }
         using var channel = _connection.CreateChannel();
-        DeclareQueue(channel, queueOption);
-        var consumer = new EventingBasicConsumer(channel);
-        consumer.Received += received;
-        channel.BasicConsume(queue: queueOption.Name,
-            autoAck: queueOption.AutoAck,
-            consumer: consumer);
+        DeclareQueue(channel, queueOptions);
+
+        var body = Encoding.UTF8.GetBytes(message);
+
+        channel.BasicPublish(exchange: string.Empty,
+            routingKey: queueOptions.Name,
+            basicProperties: null,
+            body: body);
     }
 
     /// <inheritdoc />
@@ -85,6 +77,21 @@ public class RabbitClient : IRabbitClient
             var dto = JsonSerializer.Deserialize<T>(message);
             handler(dto!, model!, ea);
         }, queueName);
+    }
+
+    private void Subscribe(EventHandler<BasicDeliverEventArgs> received, RabbitQueueOption queueOption)
+    {
+        if (!_connection.IsConnected)
+        {
+            _connection.TryConnect();
+            Channel = _connection.CreateChannel();
+        }
+        DeclareQueue(Channel, queueOption);
+        var consumer = new EventingBasicConsumer(Channel);
+        consumer.Received += received;
+        Channel.BasicConsume(queue: queueOption.Name,
+            autoAck: queueOption.AutoAck,
+            consumer: consumer);
     }
 
     private void DeclareQueue(IModel channel, RabbitQueueOption queueOption)
